@@ -123,15 +123,15 @@ def write_group_to_file(resource_name, content, url, destination, min_kubernetes
         'max_kubernetes': max_kubernetes
     }
 
-    filename_struct = {resource_name + '.json': (LiteralStr(content))}
+    filename_struct = {f'{resource_name}.json': (LiteralStr(content))}
     # rules themselves
     lines += yaml_str_repr(filename_struct)
 
     # footer
     lines += '{{- end }}'
 
-    filename = resource_name + '.yaml'
-    new_filename = "%s/%s" % (destination, filename)
+    filename = f'{resource_name}.yaml'
+    new_filename = f"{destination}/{filename}"
 
     # make sure directories to store the file exist
     makedirs(destination, exist_ok=True)
@@ -140,17 +140,19 @@ def write_group_to_file(resource_name, content, url, destination, min_kubernetes
     with open(new_filename, 'w') as f:
         f.write(lines)
 
-    print("Generated %s" % new_filename)
+    print(f"Generated {new_filename}")
 
 
 def main():
     init_yaml_styles()
     # read the rules, create a new template file per group
     for chart in charts:
-        print("Generating rules from %s" % chart['source'])
+        print(f"Generating rules from {chart['source']}")
         response = requests.get(chart['source'])
         if response.status_code != 200:
-            print('Skipping the file, response code %s not equals 200' % response.status_code)
+            print(
+                f'Skipping the file, response code {response.status_code} not equals 200'
+            )
             continue
         raw_text = response.text
 
